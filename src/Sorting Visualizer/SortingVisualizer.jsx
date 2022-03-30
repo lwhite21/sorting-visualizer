@@ -21,8 +21,9 @@ export default function SortingVisualizer(){
     // Each in file algorithm's animation array
     const [quickSortAnimations, setQuickSortAnimations] = useState([]);
     const [mergeSortAnimations, setMergeSortAnimations] = useState([]);
-    const [bubbleSortAnimations, setBubbleSortAnimations] = useState([]);
     const [heapSortAnimations, setHeapSortAnimations] = useState([]);
+    const [bubbleSortAnimations, setBubbleSortAnimations] = useState([]);
+    const [insertionSortAnimations, setInsertionSortAnimations] = useState([]);
 
     let tempAnimations;
     const [interval, setIntervalS] = useState();
@@ -72,6 +73,10 @@ export default function SortingVisualizer(){
         if (array.length > 0) sort("heapSort", true); 
     }, [heapSortAnimations]);
 
+    useEffect(() => { 
+        if (array.length > 0) sort("insertionSort", true); 
+    }, [insertionSortAnimations]);
+
 
     function resetArray(){
         setArray([]);
@@ -113,6 +118,13 @@ export default function SortingVisualizer(){
                         animations = getHeapSortAnimations(array);
                     } else {
                         animations = heapSortAnimations;
+                    }
+                    break;
+                case "insertionSort":
+                    if (!isReady) {
+                        animations = getInsertionSortAnimations(array);
+                    } else {
+                        animations = insertionSortAnimations;
                     }
                     break;
             }
@@ -198,6 +210,7 @@ export default function SortingVisualizer(){
                 <DropdownItem onClick={() => setAlgorithmSelected('Quicksort')}>Quicksort</DropdownItem>
                 <DropdownItem onClick={() => setAlgorithmSelected('Merge sort')}>Merge sort</DropdownItem>
                 <DropdownItem onClick={() => setAlgorithmSelected('Heapsort')}>Heapsort</DropdownItem>
+                <DropdownItem onClick={() => setAlgorithmSelected('Insertion sort')}>Insertion Sort</DropdownItem>
                 <DropdownItem onClick={() => setAlgorithmSelected('Bubble sort')}>Bubble sort</DropdownItem>
             </DropdownButton>
             <Slider className='button' aria-label='Array Size' min={5} max={250} value={arraySize} onChange={handleChange} disabled={areButtonsDisabled} style={{width: '200px'}}/>
@@ -252,6 +265,10 @@ export default function SortingVisualizer(){
                 break;
             case "Bubble sort":
                 sort("bubbleSort", false);
+                break;
+            case "Insertion sort":
+                console.log("got to runSelectedAlgorithm switch case");
+                sort("insertionSort", false);
                 break;
             case "Select Algorithm":
                 message.error("Please select an algorithm to sort with");
@@ -485,7 +502,35 @@ export default function SortingVisualizer(){
         }
     }
 
+    function getInsertionSortAnimations(arr) {
 
+        tempAnimations = [];
+        arr = arr.slice();
+        getInsertionSortAnimations2(arr);
+
+        function getInsertionSortAnimations2(arr) {
+            if (arr.length <= 1) return arr;
+            insertionSort(arr);
+            setInsertionSortAnimations(tempAnimations);
+        }
+
+        function insertionSort(arr) {
+            for (let i = 0; i < arr.length; i++) {
+                for (let j = i - 1; j >= 0; j--) {
+                    if (arr[j] > arr[j + 1]) {
+                        tempAnimations.push([j, j + 1]);
+                        tempAnimations.push([j, arr[j + 1]]);
+                        tempAnimations.push([j + 1, arr[j]]);
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    } else {
+                        break;
+                    }
+                }
+            }
+            return arr;
+        }
+
+      }
 
 
 
